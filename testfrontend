@@ -1,0 +1,370 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, Filter, Download, Eye, Calendar, Building2, FileText, ChevronDown, ChevronUp, X } from 'lucide-react';
+
+// Mock data for demonstration
+const mockPolicies = [
+  {
+    id: '1',
+    name: 'Remote Work Policy',
+    category: 'HR',
+    department: 'Human Resources',
+    effectiveDate: '2024-01-15',
+    version: '2.1',
+    description: 'Guidelines for remote work arrangements, equipment, and expectations for distributed teams.',
+    fileUrl: '#',
+    lastModified: '2024-01-15',
+    owner: 'HR Department'
+  },
+  {
+    id: '2',
+    name: 'Data Security Guidelines',
+    category: 'IT',
+    department: 'Information Technology',
+    effectiveDate: '2024-03-01',
+    version: '3.0',
+    description: 'Comprehensive security protocols for handling sensitive company and customer data.',
+    fileUrl: '#',
+    lastModified: '2024-03-01',
+    owner: 'IT Security'
+  },
+  {
+    id: '3',
+    name: 'Vacation and PTO Policy',
+    category: 'HR',
+    department: 'Human Resources',
+    effectiveDate: '2024-01-01',
+    version: '1.5',
+    description: 'Details on paid time off accrual, usage, carryover rules, and approval processes.',
+    fileUrl: '#',
+    lastModified: '2024-01-01',
+    owner: 'HR Department'
+  },
+  {
+    id: '4',
+    name: 'Code of Conduct',
+    category: 'Compliance',
+    department: 'Legal',
+    effectiveDate: '2023-12-01',
+    version: '4.0',
+    description: 'Ethical guidelines and behavioral expectations for all employees.',
+    fileUrl: '#',
+    lastModified: '2023-12-01',
+    owner: 'Legal Department'
+  },
+  {
+    id: '5',
+    name: 'Expense Reimbursement Policy',
+    category: 'Finance',
+    department: 'Finance',
+    effectiveDate: '2024-02-01',
+    version: '2.0',
+    description: 'Procedures for submitting and approving business expense reimbursements.',
+    fileUrl: '#',
+    lastModified: '2024-02-01',
+    owner: 'Finance Department'
+  },
+  {
+    id: '6',
+    name: 'Workplace Safety Protocol',
+    category: 'HR',
+    department: 'Human Resources',
+    effectiveDate: '2024-01-10',
+    version: '1.8',
+    description: 'Safety procedures, emergency protocols, and workplace health guidelines.',
+    fileUrl: '#',
+    lastModified: '2024-01-10',
+    owner: 'HR Department'
+  }
+];
+
+const categories = ['All', 'HR', 'IT', 'Compliance', 'Finance'];
+const departments = ['All', 'Human Resources', 'Information Technology', 'Legal', 'Finance'];
+
+function PolicyHub() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedDepartment, setSelectedDepartment] = useState('All');
+  const [filteredPolicies, setFilteredPolicies] = useState(mockPolicies);
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedPolicy, setSelectedPolicy] = useState(null);
+
+  const filterPolicies = useCallback(() => {
+    let filtered = mockPolicies;
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(policy =>
+        policy.name.toLowerCase().includes(query) ||
+        policy.description.toLowerCase().includes(query) ||
+        policy.department.toLowerCase().includes(query)
+      );
+    }
+
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(policy => policy.category === selectedCategory);
+    }
+
+    if (selectedDepartment !== 'All') {
+      filtered = filtered.filter(policy => policy.department === selectedDepartment);
+    }
+
+    setFilteredPolicies(filtered);
+  }, [searchQuery, selectedCategory, selectedDepartment]);
+
+  useEffect(() => {
+    filterPolicies();
+  }, [filterPolicies]);
+
+  const highlightText = (text, query) => {
+    if (!query) return text;
+    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    return parts.map((part, i) =>
+      part.toLowerCase() === query.toLowerCase() ?
+        <mark key={i} className="bg-yellow-200 font-semibold">{part}</mark> : part
+    );
+  };
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setSelectedCategory('All');
+    setSelectedDepartment('All');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-blue-600 text-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center gap-3 mb-4">
+            <FileText className="w-8 h-8" />
+            <h1 className="text-3xl font-bold">PolicyHub</h1>
+          </div>
+          <p className="text-blue-100">Find company policies and guidelines quickly</p>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Search Bar */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="flex gap-4 flex-wrap">
+            <div className="flex-1 min-w-64">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search policies (e.g., 'vacation', 'remote work', 'security')..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <Filter className="w-5 h-5" />
+              Filters
+              {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {/* Filter Panel */}
+          {showFilters && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                          selectedCategory === cat
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Department
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {departments.map(dept => (
+                      <button
+                        key={dept}
+                        onClick={() => setSelectedDepartment(dept)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                          selectedDepartment === dept
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {dept === 'All' ? dept : dept.split(' ')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {(searchQuery || selectedCategory !== 'All' || selectedDepartment !== 'All') && (
+                <button
+                  onClick={resetFilters}
+                  className="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                >
+                  <X className="w-4 h-4" />
+                  Clear all filters
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Results Count */}
+        <div className="mb-4 text-gray-600">
+          Found <span className="font-semibold text-gray-900">{filteredPolicies.length}</span> {filteredPolicies.length === 1 ? 'policy' : 'policies'}
+        </div>
+
+        {/* Policy Cards */}
+        <div className="grid gap-6">
+          {filteredPolicies.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-md p-12 text-center">
+              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-700 mb-2">No policies found</h3>
+              <p className="text-gray-500">Try adjusting your search or filters</p>
+            </div>
+          ) : (
+            filteredPolicies.map(policy => (
+              <div key={policy.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
+                        {highlightText(policy.name, searchQuery)}
+                      </h3>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                          {policy.category}
+                        </span>
+                        <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+                          v{policy.version}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    {highlightText(policy.description, searchQuery)}
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Building2 className="w-4 h-4" />
+                      <span>{policy.department}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Calendar className="w-4 h-4" />
+                      <span>Effective: {new Date(policy.effectiveDate).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <FileText className="w-4 h-4" />
+                      <span>Owner: {policy.owner}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => setSelectedPolicy(policy)}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View Policy
+                    </button>
+                    <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                      <Download className="w-4 h-4" />
+                      Download
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Policy Modal */}
+      {selectedPolicy && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">{selectedPolicy.name}</h2>
+              <button
+                onClick={() => setSelectedPolicy(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
+                    {selectedPolicy.category}
+                  </span>
+                  <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-full">
+                    Version {selectedPolicy.version}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-4">
+                  <div>
+                    <span className="font-semibold">Department:</span> {selectedPolicy.department}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Effective Date:</span> {new Date(selectedPolicy.effectiveDate).toLocaleDateString()}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Owner:</span> {selectedPolicy.owner}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Last Modified:</span> {new Date(selectedPolicy.lastModified).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+              <div className="prose max-w-none">
+                <p className="text-gray-700 leading-relaxed mb-4">{selectedPolicy.description}</p>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600">
+                    This is a preview. In production, the full policy document would be displayed here using a PDF viewer or formatted HTML content from SharePoint.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t border-gray-200 flex gap-3">
+              <button className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Download className="w-4 h-4" />
+                Download PDF
+              </button>
+              <button
+                onClick={() => setSelectedPolicy(null)}
+                className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default PolicyHub;
