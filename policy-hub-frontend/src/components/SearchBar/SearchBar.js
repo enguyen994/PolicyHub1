@@ -15,7 +15,8 @@ const SearchBar = ({ onSearch }) => {
 
     return (
         <div className="searchbar-container">
-            <h1 className="searchbar-heading">PolicyHub</h1>
+            <h1 className="searchbar-heading">Welcome to PolicyHub!👋</h1>
+            <p className="searchbar-subheading">An internal search engine for Lewer!</p>
             <form className="searchbar-form" onSubmit={handleSubmit}>
                 <input
                     type="text"
