@@ -1,5 +1,6 @@
 import React from 'react';
 import './SearchBar.css';
+import { FaSearch } from 'react-icons/fa';
 
 const SearchBar = ({ onSearch }) => {
     const [query, setQuery] = React.useState('');
@@ -15,17 +16,22 @@ const SearchBar = ({ onSearch }) => {
 
     return (
         <div className="searchbar-container">
-            <h1 className="searchbar-heading">Welcome to PolicyHub!👋</h1>
-            <p className="searchbar-subheading">An internal search engine for Lewer!</p>
             <form className="searchbar-form" onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    className="searchbar-input"
-                    placeholder="Search policies..."
-                    value={query}
-                    onChange={handleInputChange}
-                />
-                <button type="submit" className="searchbar-button">Search</button>
+                <div className="searchbar-input-wrapper">
+                    <input
+                        type="text"
+                        className="searchbar-input"
+                        placeholder="What are you looking for?"
+                        value={query}
+                        onChange={handleInputChange}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleSubmit(e);
+                            }
+                        }}
+                    />
+                    <span className="searchbar-icon"><FaSearch /></span>
+                </div>
             </form>
         </div>
     );
