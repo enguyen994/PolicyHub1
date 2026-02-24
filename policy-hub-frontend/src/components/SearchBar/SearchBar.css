@@ -12,6 +12,7 @@
 .searchbar-input {
     padding: 0.5rem 1rem;
     font-size: 15px;
+    width: 500px;
     border: none;
     outline: none;
 }

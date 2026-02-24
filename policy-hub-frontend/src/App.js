@@ -1,13 +1,18 @@
 
 import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard/Dashboard';
+import Login from './components/Login/Login';
 
 function App() {
-
   return (
-    <div className="App" style={{ minHeight: '100vh', position: 'relative', paddingBottom: '2.5rem' }}>
-      <Dashboard />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
