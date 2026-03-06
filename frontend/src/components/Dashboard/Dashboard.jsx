@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PolicyModal from './PolicyModal';
+import PolicyModal from '../PolicyModal/PolicyModal';
 
 const CATEGORIES = ['All', 'HR', 'IT', 'Compliance', 'Finance'];
 const DEPARTMENTS = ['All', 'Human Resources', 'Information Technology', 'Legal', 'Finance'];
