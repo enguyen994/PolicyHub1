@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
-import ErrorPage from './components/ErrorPage';
-import Dashboard from './components/Dashboard';
+import LoginPage from './components/Login/LoginPage';
+import ErrorPage from './components/Error/ErrorPage';
+import Dashboard from './components/Dashboard/Dashboard';
 
 export default function App() {
   return (

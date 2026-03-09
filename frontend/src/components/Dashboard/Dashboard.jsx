@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PolicyModal from '../PolicyModal/PolicyModal';
+import GeneratedResponse from '../GeneratedResponse/GeneratedResponse';
+import RelatedDocs from '../RelatedDocs/RelatedDocs';
+import Footer from '../Footer/Footer';
+import { searchDoc } from '../../api/searchDoc';
 
 const CATEGORIES = ['All', 'HR', 'IT', 'Compliance', 'Finance'];
 const DEPARTMENTS = ['All', 'Human Resources', 'Information Technology', 'Legal', 'Finance'];
@@ -183,6 +187,26 @@ export default function Dashboard({ user = 'User' }) {
   const [showFilters, setShowFilters] = useState(false);
   const [modalPolicyId, setModalPolicyId] = useState(null);
 
+  // AI search state (from policy-hub-frontend)
+  const [aiResponse, setAiResponse] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
+  const handleAISearch = useCallback(async (query) => {
+    if (!query) return;
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const accessToken = import.meta.env.VITE_ACCESS_TOKEN || '';
+      const res = await searchDoc(accessToken, query);
+      setAiResponse(res);
+    } catch {
+      setAiError('Failed to fetch AI search results');
+    } finally {
+      setAiLoading(false);
+    }
+  }, []);
+
   const filteredPolicies = useMemo(() => {
     let filtered = policies;
 
@@ -283,6 +307,7 @@ export default function Dashboard({ user = 'User' }) {
                   type="text"
                   value={searchQuery}
                   onChange={handleSearch}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleAISearch(searchQuery); }}
                   placeholder="Search policies (e.g., 'vacation', 'remote work', 'security')..."
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -319,6 +344,20 @@ export default function Dashboard({ user = 'User' }) {
           />
         </div>
 
+        {/* AI Search Results */}
+        {aiLoading && (
+          <div className="text-center py-4 text-gray-500">Searching documents…</div>
+        )}
+        {aiError && (
+          <div className="text-center py-4 text-red-600">{aiError}</div>
+        )}
+        {aiResponse && (
+          <div className="mb-6">
+            <GeneratedResponse summary={aiResponse.summary} />
+            <RelatedDocs documents={aiResponse.unique_documents} />
+          </div>
+        )}
+
         {/* Results Count */}
         <div className="mb-4 text-gray-600">
           Found <span className="font-semibold text-gray-900">{filteredPolicies.length}</span> policies
@@ -351,6 +390,8 @@ export default function Dashboard({ user = 'User' }) {
       {modalPolicy && (
         <PolicyModal policy={modalPolicy} onClose={() => setModalPolicyId(null)} />
       )}
+
+      <Footer />
     </div>
   );
 }
