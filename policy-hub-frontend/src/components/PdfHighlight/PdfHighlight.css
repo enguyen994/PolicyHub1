@@ -1,0 +1,7 @@
+.pdf-highlight {
+    background-color: yellow;
+    color: inherit;
+    font-weight: bold;
+    border-radius: 2px;
+    padding: 0 2px;
+}

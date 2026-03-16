@@ -2,6 +2,9 @@ import SearchBar from '../SearchBar/SearchBar';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
 import GeneratedResponse from '../GeneratedResponse/GeneratedResponse';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import '../PdfViewerDialog/PdfViewerDialog.css';
 import RelatedDocs from '../RelatedDocs/RelatedDocs';
 import { searchDoc } from '../../api/searchDoc';
 import React from 'react';
@@ -35,12 +38,19 @@ const Dashboard = () => {
             <p className="searchbar-subheading">An internal search engine for Lewer!</p>
             <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '3rem' }}>
                 <SearchBar onSearch={handleSearch} />
-                {loading && <div>Loading...</div>}
+                {loading && (
+                    <div className="generated-response">
+                        <div style={{ width: 800 }}>
+                            <Skeleton count={5} height={20} />
+                        </div>
+                    </div>
+                )}
                 {error && <div style={{ color: 'red' }}>{error}</div>}
                 {response && (
                     <>
                         <GeneratedResponse summary={response.summary} />
-                        <RelatedDocs documents={response.unique_documents} />
+                        <RelatedDocs documents={response.unique_documents} matchWords={response.match_words} />
+                
                     </>
                 )}
             </main>
