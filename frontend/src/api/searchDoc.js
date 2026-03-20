@@ -1,5 +1,5 @@
 export async function searchDoc(accessToken, query) {
-    const response = await fetch('http://localhost:8000/search-doc', {
+    const response = await fetch('/search-doc', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
