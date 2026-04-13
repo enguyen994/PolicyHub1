@@ -3,16 +3,7 @@ import { useLocation } from 'react-router-dom';
 import './Login.css';
 const Login = () => {
   const location = useLocation();
-
-  // Same logic as .jsx:
-  // location.state?.messages || []
-  // expected shape: [{ category, message }]
   const messages = location.state?.messages || [];
-
-  const handleLogin = () => {
-    // Same backend auth endpoint used in .jsx
-    window.location.href = '/auth/microsoft';
-  };
 
   return (
     <div>
@@ -41,7 +32,11 @@ const Login = () => {
         ))}
 
         {/* Existing button aesthetics preserved */}
-        <button className="ms-button" type="button" onClick={handleLogin}>
+        <button
+          className="ms-button"
+          type="button"
+          onClick={() => { window.location.href = 'http://localhost:8000/auth/microsoft'; }}
+        >
           <span>Sign in with Microsoft</span>
           <span className="ms-icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 24 24">
