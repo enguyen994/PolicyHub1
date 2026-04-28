@@ -1,13 +1,21 @@
+import { getApiBaseUrl } from './config';
+
 // Fetches base64 PDF from backend and returns Uint8Array
-export async function fetchSharepointPdf({ access_token, file_id }) {
-    const url = `http://localhost:8000/download-sharepoint-file/${file_id}`;
+export async function fetchSharepointPdf({ file_id }) {
+    const url = `${getApiBaseUrl()}/download-sharepoint-file/${file_id}`;
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ access_token })
+        credentials: 'include',
+        body: JSON.stringify({})
     });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch PDF file');
+    }
+
     const result = await response.json();
     if (result.file_content) {
         // Decode base64 to Uint8Array
@@ -17,7 +25,6 @@ export async function fetchSharepointPdf({ access_token, file_id }) {
             byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const uint8Array = new Uint8Array(byteNumbers);
-        console.log(new TextDecoder().decode(uint8Array.slice(0, 10))); // <-- Add this line
         return uint8Array;
     }
     return null;

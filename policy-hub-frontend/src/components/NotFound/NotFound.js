@@ -1,22 +1,26 @@
 import React from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { MdError } from 'react-icons/md';
+import './NotFound.css';
 
 export default function NotFound() {
-    const [searchParams] = useSearchParams();
-    const errorCode = searchParams.get('code') || '500';
-    const message = searchParams.get('message') || 'An unexpected error occurred';
+    const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="not-found-container">
             <div className="text-center">
-                <h1 className="text-6xl font-bold text-gray-300 mb-4">{errorCode}</h1>
-                <p className="text-xl text-gray-600 mb-8">{message}</p>
-                <Link
-                    to="/"
-                    className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                <MdError
+                    aria-hidden="true"
+                    style={{ fontSize: '5.25rem', color: '#000000ff' }}
+                />
+                <h1 className="text-xl text-gray-600 mb-8">Oops! The page you're looking for doesn't exist.</h1>
+                <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="not-found-button"
                 >
-                    Return to Login
-                </Link>
+                    Go Back
+                </button>
             </div>
         </div>
     );

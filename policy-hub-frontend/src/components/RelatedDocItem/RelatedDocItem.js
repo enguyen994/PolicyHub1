@@ -12,9 +12,8 @@ const RelatedDocItem = ({ doc, matchWords }) => {
         setOpenDialog(true);
         setLoading(true);
         try {
-            const access_token = process.env.REACT_APP_ACCESS_TOKEN;
             const file_id = doc.document_id;
-            const pdfBytes = await fetchSharepointPdf({ access_token, file_id });
+            const pdfBytes = await fetchSharepointPdf({ file_id });
             setPdfData(pdfBytes);
         } catch (e) {
             setPdfData(null);
@@ -29,12 +28,12 @@ const RelatedDocItem = ({ doc, matchWords }) => {
         <>
             <div className="related-doc-item">
                 <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={handleOpen}>{doc.filename}</span>
-                <a href={doc.filepath} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'black', fontWeight: 500 }}>
+                <a href={doc.filepath} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', marginRight: 'auto', textDecoration: 'none', color: 'black', fontWeight: 500 }}>
                     <FiExternalLink style={{ marginLeft: '6px' }} />
                 </a>
-                <span style={{ marginLeft: 'auto', color: 'black', fontSize: '18px', fontWeight: 'bold' }}>
+                {/* <span style={{ marginLeft: 'auto', color: 'black', fontSize: '18px', fontWeight: 'bold' }}>
                     {(doc.search_score * 100).toFixed(1)}%
-                </span>
+                </span> */}
             </div>
             {/* {openDialog && (
                 <PdfViewerDialog

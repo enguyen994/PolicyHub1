@@ -1,5 +1,7 @@
+import { getApiBaseUrl } from './config';
+
 export async function logout() {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+    const apiUrl = getApiBaseUrl();
     const response = await fetch(`${apiUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include'

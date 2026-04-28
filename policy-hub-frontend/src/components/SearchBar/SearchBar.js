@@ -11,7 +11,13 @@ const SearchBar = ({ onSearch }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (onSearch) onSearch(query);
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery) {
+            return;
+        }
+        if (onSearch) {
+            onSearch(trimmedQuery);
+        }
     };
 
     return (
@@ -24,11 +30,6 @@ const SearchBar = ({ onSearch }) => {
                         placeholder="What are you looking for?"
                         value={query}
                         onChange={handleInputChange}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleSubmit(e);
-                            }
-                        }}
                     />
                     <span className="searchbar-icon"><FaSearch /></span>
                 </div>

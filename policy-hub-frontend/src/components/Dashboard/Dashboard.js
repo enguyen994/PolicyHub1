@@ -7,36 +7,70 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import '../PdfViewerDialog/PdfViewerDialog.css';
 import RelatedDocs from '../RelatedDocs/RelatedDocs';
 import { searchDoc } from '../../api/searchDoc';
+import { fetchCurrentUser } from '../../api/fetchCurrentUser';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
 const Dashboard = () => {
     const [response, setResponse] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState(null);
+    const [currentUser, setCurrentUser] = React.useState('');
+    const latestRequestId = React.useRef(0);
+    const navigate = useNavigate();
 
-    // Hardcoded access token for now
-    const accessToken = process.env.REACT_APP_ACCESS_TOKEN;
+    React.useEffect(() => {
+        let isMounted = true;
+
+        const loadCurrentUser = async () => {
+            try {
+                const user = await fetchCurrentUser();
+                if (isMounted && user) {
+                    setCurrentUser(user);
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setCurrentUser('');
+                }
+            }
+        };
+
+        loadCurrentUser();
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const handleSearch = async (query) => {
+        const requestId = latestRequestId.current + 1;
+        latestRequestId.current = requestId;
+
         setLoading(true);
-        setError(null);
+        setResponse(null);
+
         try {
-            const res = await searchDoc(accessToken, query);
-            setResponse(res);
+            const res = await searchDoc(query);
+            if (latestRequestId.current === requestId) {
+                setResponse(res);
+            }
         } catch (err) {
-            setError('Failed to fetch search results');
+            if (latestRequestId.current === requestId) {
+                navigate('/not-found');
+            }
         } finally {
-            setLoading(false);
+            if (latestRequestId.current === requestId) {
+                setLoading(false);
+            }
         }
     };
 
     return (
         <div className="dashboard-container" style={{ minHeight: '100vh', position: 'relative', paddingBottom: '2.5rem' }}>
             <NavBar />
-            <h1 className="searchbar-heading">Welcome to PolicyHub!👋</h1>
+            <h1 className="searchbar-heading">Hello, {currentUser ? `${currentUser}` : ''}!👋</h1>
             <p className="searchbar-subheading">An internal search engine for Lewer!</p>
-            <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '3rem' }}>
+            <p className="searchbar-disclaimer">Disclaimer: AI-generated responses may not be accurate. Please verify with official documents.</p>
+            <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2rem' }}>
                 <SearchBar onSearch={handleSearch} />
                 {loading && (
                     <div className="generated-response">
@@ -45,12 +79,11 @@ const Dashboard = () => {
                         </div>
                     </div>
                 )}
-                {error && <div style={{ color: 'red' }}>{error}</div>}
                 {response && (
                     <>
                         <GeneratedResponse summary={response.summary} />
                         <RelatedDocs documents={response.unique_documents} matchWords={response.match_words} />
-                
+
                     </>
                 )}
             </main>

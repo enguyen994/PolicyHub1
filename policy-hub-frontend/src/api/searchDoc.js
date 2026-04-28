@@ -1,12 +1,14 @@
-export async function searchDoc(accessToken, query) {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:7071/api';
+import { getApiBaseUrl } from './config';
+
+export async function searchDoc(query) {
+    const apiUrl = getApiBaseUrl();
     const response = await fetch(`${apiUrl}/search-doc`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ access_token: accessToken, query })
+        credentials: 'include',
+        body: JSON.stringify({ query })
     });
     if (!response.ok) {
         throw new Error('Failed to fetch search results');

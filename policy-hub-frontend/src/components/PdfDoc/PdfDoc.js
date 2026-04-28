@@ -44,7 +44,11 @@ const PdfDoc = ({ pdfData, matchWords }) => {
 				<Viewer
 					fileUrl={pdfUrl}
 					defaultScale={1.0}
-					renderLoader={() => <div>Loading PDF...</div>}
+					renderLoader={() => (
+						<div className="pdf-loader" role="status">
+							<span className="pdf-spinner" />
+						</div>
+					)}
 					plugins={[searchPluginInstance]}
 				/>
 			</Worker>

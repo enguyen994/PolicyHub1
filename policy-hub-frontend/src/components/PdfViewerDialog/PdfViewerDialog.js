@@ -12,7 +12,9 @@ const PdfViewerDialog = ({ open, onClose, fileUrl, matchWords, loading }) => {
             <div className="pdf-dialog pdf-dialog-large">
                 <button className="pdf-dialog-close" onClick={onClose} aria-label="Close PDF dialog">&times;</button>
                 {loading ? (
-                    <div style={{ textAlign: 'center', marginTop: '2rem' }}>Loading PDF...</div>
+                    <div className="pdf-loader" role="status">
+                        <span className="pdf-spinner" />
+                    </div>
                 ) : fileUrl ? (
                     <PdfDoc pdfData={fileUrl} matchWords={matchWords} />
                 ) : (

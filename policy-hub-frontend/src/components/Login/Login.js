@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import './Login.css';
+import { getApiBaseUrl } from '../../api/config';
 const Login = () => {
   const location = useLocation();
   const messages = location.state?.messages || [];
@@ -35,7 +36,7 @@ const Login = () => {
         <button
           className="ms-button"
           type="button"
-          onClick={() => { window.location.href = 'http://localhost:8000/auth/microsoft'; }}
+          onClick={() => { window.location.href = `${getApiBaseUrl()}/auth/microsoft`; }}
         >
           <span>Sign in with Microsoft</span>
           <span className="ms-icon" aria-hidden="true">
